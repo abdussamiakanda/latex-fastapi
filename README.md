@@ -67,9 +67,14 @@ uvicorn app.main:app --reload
 {
   "success": true,
   "pdf": "JVBERi0xLjQK...",
+  "synctex": "H4sIAAAAAAAAA...",
   "log": "This is pdfTeX...",
   "error": null
 }
 ```
+
+`synctex` is the base64 of the `.synctex.gz` the engine writes (it is run with
+`-synctex=1`), or `null` if none was produced. GitLaTeX uses it to jump between
+source lines and the PDF.
 
 **Authentication:** Include `X-API-Key: your_key` or `Authorization: Bearer your_key` header.

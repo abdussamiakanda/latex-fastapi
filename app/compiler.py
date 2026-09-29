@@ -19,6 +19,7 @@ def _run_latex_pass(engine_path: str, main_tex: str, workdir: Path, stem: str) -
         "-shell-escape",
         "-interaction=nonstopmode",
         "-file-line-error",
+        "-synctex=1",
         main_tex,
     ]
     result = subprocess.run(
@@ -37,7 +38,8 @@ def _run_latex_pass(engine_path: str, main_tex: str, workdir: Path, stem: str) -
         raise RuntimeError(err_text)
 
 
-def compile_latex(engine: str, main_tex: str, workdir: Path) -> bytes:
+def compile_latex(engine: str, main_tex: str, workdir: Path) -> tuple[bytes, bytes | None]:
+    """Returns the PDF and its .synctex.gz (None if the engine wrote none)."""
     engine_path = _find_engine(engine)
     stem = Path(main_tex).stem
 
@@ -61,10 +63,12 @@ def compile_latex(engine: str, main_tex: str, workdir: Path) -> bytes:
     if not pdf_path.exists():
         raise RuntimeError("PDF file not generated")
 
-    return pdf_path.read_bytes()
+    synctex_path = workdir / f"{stem}.synctex.gz"
+    synctex = synctex_path.read_bytes() if synctex_path.exists() else None
+    return pdf_path.read_bytes(), synctex
 
 
-def process_compile(engine: str, main: str, files: list[dict], workdir: Path) -> bytes:
+def process_compile(engine: str, main: str, files: list[dict], workdir: Path) -> tuple[bytes, bytes | None]:
     if not files:
         raise ValueError("No files to compile")
 

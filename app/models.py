@@ -21,6 +21,8 @@ class CompileRequest(BaseModel):
 class CompileResponse(BaseModel):
     success: bool
     pdf: Optional[str] = None
+    # base64 .synctex.gz; lets GitLaTeX jump between source lines and the PDF
+    synctex: Optional[str] = None
     log: Optional[str] = None
     error: Optional[str] = None
 

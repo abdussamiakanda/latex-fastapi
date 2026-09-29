@@ -39,10 +39,11 @@ async def compile_document(request: Request) -> CompileResponse:
 
     workspace = create_workspace()
     try:
-        pdf_bytes = process_compile(engine, main, files, workspace)
+        pdf_bytes, synctex_bytes = process_compile(engine, main, files, workspace)
         pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
         pdf_data_url = f"data:application/pdf;base64,{pdf_b64}"
-        return CompileResponse(success=True, pdf=pdf_data_url)
+        synctex_b64 = base64.b64encode(synctex_bytes).decode("utf-8") if synctex_bytes else None
+        return CompileResponse(success=True, pdf=pdf_data_url, synctex=synctex_b64)
     except Exception as e:
         return CompileResponse(success=False, error=str(e))
     finally:
