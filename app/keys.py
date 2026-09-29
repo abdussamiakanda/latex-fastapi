@@ -78,3 +78,12 @@ def is_valid_key(api_key: str) -> bool:
     if not api_key:
         return False
     return api_key in get_active_keys()
+
+
+def find_key(api_key: str) -> dict | None:
+    if not api_key:
+        return None
+    for k in _read_keys():
+        if k["key"] == api_key:
+            return {"id": k["id"], "label": k["label"], "active": k["active"]}
+    return None

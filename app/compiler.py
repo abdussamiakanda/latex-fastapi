@@ -131,3 +131,4 @@ def convert_legacy_request(body: dict) -> tuple[str, str, list[dict]]:
 
     main = detect_main_tex(files) or "main.tex"
     return engine, main, files
+

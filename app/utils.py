@@ -54,3 +54,4 @@ def detect_main_tex(files: list[dict]) -> str | None:
         if name.lower().endswith(".tex"):
             return name
     return None
+

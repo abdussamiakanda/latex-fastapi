@@ -1,0 +1,15 @@
+[Unit]
+Description=FastAPI LaTeX Compiler
+After=network.target
+
+[Service]
+Type=simple
+User=akanda
+WorkingDirectory=/home/akanda/latex-api
+EnvironmentFile=/home/akanda/latex-api/.env
+ExecStart=/home/akanda/latex-api/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 5050
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

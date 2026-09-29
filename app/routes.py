@@ -37,14 +37,19 @@ async def compile_document(request: Request) -> CompileResponse:
         main = parsed.main
         files = parsed.files
 
+    request.state.log_detail = {"engine": engine, "main": main, "file_count": len(files)}
+
     workspace = create_workspace()
     try:
         pdf_bytes, synctex_bytes = process_compile(engine, main, files, workspace)
         pdf_b64 = base64.b64encode(pdf_bytes).decode("utf-8")
         pdf_data_url = f"data:application/pdf;base64,{pdf_b64}"
         synctex_b64 = base64.b64encode(synctex_bytes).decode("utf-8") if synctex_bytes else None
+        request.state.log_detail.update({"compiled": True, "pdf_bytes": len(pdf_bytes),
+                                         "synctex": synctex_bytes is not None})
         return CompileResponse(success=True, pdf=pdf_data_url, synctex=synctex_b64)
     except Exception as e:
+        request.state.log_detail.update({"compiled": False, "compile_error": str(e)[:500]})
         return CompileResponse(success=False, error=str(e))
     finally:
         cleanup_workspace(workspace)
@@ -77,3 +82,4 @@ async def toggle_key(request: Request, key_id: str, body: ApiKeyToggle) -> ApiKe
         raise HTTPException(status_code=404, detail="Key not found")
     updated = next((k for k in keys.list_keys() if k["id"] == key_id), None)
     return ApiKeyResponse(**updated)
+

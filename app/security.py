@@ -1,5 +1,5 @@
 from fastapi import HTTPException, Request, status
-from app.keys import get_active_keys, is_valid_key
+from app.keys import get_active_keys, is_valid_key, find_key
 
 
 async def verify_api_key(request: Request) -> None:
@@ -21,3 +21,8 @@ async def verify_api_key(request: Request) -> None:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or missing API key",
         )
+
+    matched = find_key(api_key or "")
+    if matched:
+        request.state.key_id = matched["id"]
+        request.state.key_label = matched["label"]
